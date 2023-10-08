@@ -1,5 +1,10 @@
 #!/bin/bash
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Full path to the file in the script directory
+FIXUP_PATCH="$SCRIPT_DIR/fixups.patch"
+
 rm -rf ./boilerplate_server_rails_mono
 
 git clone git@github.com:nubinary/boilerplate_server.git boilerplate_server_rails_mono
@@ -18,7 +23,7 @@ git cam "Install vite_rails"
 git remote add boilerplate_client ../boilerplate_client
 git fetch boilerplate_client
 
-git checkout -b branch_boilerplate_client boilerplate_client/task/NUB-1450
+git checkout -b branch_boilerplate_client boilerplate_client/main
 mkdir client_files
 git mv -k * client_files/
 git mv .npmrc client_files/
@@ -30,7 +35,7 @@ git mv .prettierignore client_files/.istanbul.yml
 git rm -r .circleci .devcontainer .dockerignore .editorconfig .gitignore
 git cam "Moved boilerplate_client repo to client_files subdir"
 
-git com
+git co feature/single-repo
 git merge branch_boilerplate_client --allow-unrelated-histories --no-edit
 
 # git add client_files
@@ -108,3 +113,7 @@ sed -i '' '/ActiveAdmin.routes(self)/a\
   root to: "frontend#root", via: :get' config/routes.rb
 
 git cam "Add frontend#root route"
+
+echo "patching $FIXUP_PATCH"
+patch -p1 < $FIXUP_PATCH
+git cam "Fixup patch"
