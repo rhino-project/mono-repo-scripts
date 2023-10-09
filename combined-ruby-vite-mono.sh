@@ -26,30 +26,29 @@ git fetch boilerplate_client
 git checkout -b branch_boilerplate_client boilerplate_client/main
 mkdir client_files
 git mv -k * client_files/
-git mv .npmrc client_files/
-git mv .nvmrc client_files/
-git mv .eslintrc.json client_files/
-git mv .prettierrc.json client_files/
-git mv .prettierignore client_files/
-git mv .istanbul.yml client_files/.istanbul.yml
+
+CLIENT_DOT_FILES=".npmrc .nvmrc .eslintrc.json .prettierrc.json .prettierignore .istanbul.yml"
+for file in $CLIENT_DOT_FILES; do
+  git mv client_files/$file .
+done
+
 git rm -r .circleci .devcontainer .dockerignore .editorconfig .gitignore
 git cam "Moved boilerplate_client repo to client_files subdir"
 
 git co feature/single-repo
 git merge branch_boilerplate_client --allow-unrelated-histories --no-edit
 
-git mv client_files/.npmrc .
-git mv client_files/.nvmrc .
-git mv client_files/.eslintrc.json .
-git mv client_files/.prettierrc.json .
-git mv client_files/.prettierignore .
-git mv client_files/.istanbul.yml .
+for file in $CLIENT_DOT_FILES; do
+  git mv client_files/$file .
+done
+
 git mv -f client_files/vite.config.ts .
 git mv -f client_files/package.json .
 git mv -f client_files/package-lock.json .
 git mv client_files/tsconfig.json app/frontend/
 git mv client_files/src app/frontend/
 git mv app/frontend/src/index.js app/frontend/entrypoints/index.js
+git mv client_files/cypress .
 git rm app/frontend/entrypoints/application.js
 git commit -m "Moved files to desired locations"
 
