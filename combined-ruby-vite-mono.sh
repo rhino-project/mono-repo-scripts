@@ -38,14 +38,6 @@ git cam "Moved boilerplate_client repo to client_files subdir"
 git co feature/single-repo
 git merge branch_boilerplate_client --allow-unrelated-histories --no-edit
 
-# git add client_files
-# git cam "Added client_files subdirectory"
-# git merge --allow-unrelated-histories -s ours --no-commit boilerplate_client/task/NUB-1450
-# git read-tree --prefix=client/ -u boilerplate_client/main
-
-# git read-tree --prefix=client_files/ -u boilerplate_client/task/NUB-1450
-# git subtree add --prefix=client_files boilerplate_client/task/NUB-1450
-
 git mv client_files/.npmrc .
 git mv client_files/.nvmrc .
 git mv client_files/.eslintrc.json .
