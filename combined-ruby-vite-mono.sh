@@ -4,6 +4,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 FIXUP_PATCH="$SCRIPT_DIR/fixups.patch"
 DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
+TESTS_PATCH="$SCRIPT_DIR/tests.patch"
 
 rm -rf ./boilerplate_server_rails_mono
 
@@ -82,6 +83,8 @@ mkdir -p app/controllers
 
 # Write the content to the file
 cat <<EOL > app/controllers/frontend_controller.rb
+# frozen_string_literal: true
+
 class FrontendController < ApplicationController
   def root
   end
@@ -112,3 +115,7 @@ git cam "Fixup patch"
 echo "patching $DEVCONTAINER_PATCH"
 patch -p1 < $DEVCONTAINER_PATCH
 git cam "Devcontainer patch"
+
+echo "patching $TESTS_PATCH"
+patch -p1 < $TESTS_PATCH
+git cam "Tests patch"
