@@ -1,0 +1,47 @@
+diff --git a/.devcontainer/devcontainer.json b/.devcontainer/devcontainer.json
+index 9af81812..40148308 100644
+--- a/.devcontainer/devcontainer.json
++++ b/.devcontainer/devcontainer.json
+@@ -7,15 +7,39 @@
+ 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+ 
+ 	// Features to add to the dev container. More info: https://containers.dev/features.
+-	// "features": {},
++	"features": {
++		"ghcr.io/devcontainers/features/node:1": { "version": "18.12.1"}
++	},
+ 
+ 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+ 	// This can be used to network with other containers or the host.
+ 	// "forwardPorts": [3000, 5432],
+ 
+-	// Use 'postCreateCommand' to run commands after the container is created.
+-	"postCreateCommand": "bundle install"
++	"forwardPorts": [3000],
++	"portsAttributes": {
++	   "3000": {
++			"label": "Server",
++			"onAutoForward": "openBrowser"
++		}
++	},
+ 
++	"updateContentCommand": {
++		"server": "bundle install && rails rhino:dev:setup -- --no-prompt --db-name=postgres --db-user=postgres --db-password=postgres && rails db:setup",
++		"client": "npm install"
++	},
++
++	"postAttachCommand": {
++		"server": "rails s",
++		"client": "bin/vite dev"
++	},
++
++	"containerEnv": { 
++		// Client
++		"REACT_APP_API_ROOT_PATH": "https://${localEnv:CODESPACE_NAME}-3000.${localEnv:GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}",
++
++		// Server
++		"FRONT_END_URL": "https://${localEnv:CODESPACE_NAME}-3000.${localEnv:GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
++	}
+ 	// Configure tool-specific properties.
+ 	// "customizations": {},
+ 

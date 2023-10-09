@@ -2,8 +2,8 @@
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Full path to the file in the script directory
 FIXUP_PATCH="$SCRIPT_DIR/fixups.patch"
+DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 
 rm -rf ./boilerplate_server_rails_mono
 
@@ -108,3 +108,7 @@ git cam "Add frontend#root route"
 echo "patching $FIXUP_PATCH"
 patch -p1 < $FIXUP_PATCH
 git cam "Fixup patch"
+
+echo "patching $DEVCONTAINER_PATCH"
+patch -p1 < $DEVCONTAINER_PATCH
+git cam "Devcontainer patch"
