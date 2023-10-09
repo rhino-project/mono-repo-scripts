@@ -5,6 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 FIXUP_PATCH="$SCRIPT_DIR/fixups.patch"
 DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 TESTS_PATCH="$SCRIPT_DIR/tests.patch"
+FRONTEND_TESTS_PATCH="$SCRIPT_DIR/frontend-tests.patch"
 
 rm -rf ./boilerplate_server_rails_mono
 
@@ -119,3 +120,8 @@ git cam "Devcontainer patch"
 echo "patching $TESTS_PATCH"
 patch -p1 < $TESTS_PATCH
 git cam "Tests patch"
+
+echo "patching $FRONTEND_TESTS_PATCH"
+patch -p1 < $FRONTEND_TESTS_PATCH
+git add cypress.config.ts
+git cam "Frontend tests patch"
