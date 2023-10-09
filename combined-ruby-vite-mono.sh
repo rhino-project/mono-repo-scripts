@@ -31,7 +31,7 @@ git mv .nvmrc client_files/
 git mv .eslintrc.json client_files/
 git mv .prettierrc.json client_files/
 git mv .prettierignore client_files/
-git mv .prettierignore client_files/.istanbul.yml
+git mv .istanbul.yml client_files/.istanbul.yml
 git rm -r .circleci .devcontainer .dockerignore .editorconfig .gitignore
 git cam "Moved boilerplate_client repo to client_files subdir"
 
