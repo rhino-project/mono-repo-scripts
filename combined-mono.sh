@@ -1,30 +1,35 @@
 #!/bin/bash
 
+GIT_REPO_BASE="boilerplate_"
+CLIENT_REPO_NAME="${GIT_REPO_BASE}client"
+SERVER_REPO_NAME="${GIT_REPO_BASE}server"
+MONO_REPO_NAME="${GIT_REPO_BASE}mono"
+
 rm -rf ./mono-construction
 
-mkdir -p mono-construction/boilerplate_mono
+mkdir -p "mono-construction/${MONO_REPO_NAME}"
 cd  mono-construction
 
-git clone git@github.com:nubinary/boilerplate_client.git
-cd boilerplate_client
+git clone "git@github.com:nubinary/${CLIENT_REPO_NAME}.git"
+cd $CLIENT_REPO_NAME
 git-filter-repo --to-subdirectory-filter client
 
 cd ..
 
-git clone git@github.com:nubinary/boilerplate_server.git
-cd boilerplate_server
+git clone "git@github.com:nubinary/${SERVER_REPO_NAME}.git"
+cd $SERVER_REPO_NAME
 git-filter-repo --to-subdirectory-filter server
 
-cd ../boilerplate_mono
+cd ../$MONO_REPO_NAME
 git init
 
-git remote add boilerplate_client ../boilerplate_client
-git fetch boilerplate_client
-git merge boilerplate_client/main --allow-unrelated-histories
+git remote add $CLIENT_REPO_NAME ../$CLIENT_REPO_NAME
+git fetch $CLIENT_REPO_NAME
+git merge $CLIENT_REPO_NAME/main --allow-unrelated-histories
 
-git remote add boilerplate_server ../boilerplate_server
-git fetch boilerplate_server
-git merge boilerplate_server/main --allow-unrelated-histories
+git remote add $SERVER_REPO_NAME ../$SERVER_REPO_NAME
+git fetch $SERVER_REPO_NAME
+git merge $SERVER_REPO_NAME/main --allow-unrelated-histories
 
 
 
