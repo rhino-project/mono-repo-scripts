@@ -1,39 +1,32 @@
 #!/bin/bash
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+rm -rf ./mono-construction
 
-FIXUP_PATCH="$SCRIPT_DIR/fixups.patch"
-DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
-TESTS_PATCH="$SCRIPT_DIR/tests.patch"
-FRONTEND_TESTS_PATCH="$SCRIPT_DIR/frontend-tests.patch"
+mkdir -p mono-construction/boilerplate_mono
+cd  mono-construction
 
-rm -rf ./boilerplate_mono
+git clone git@github.com:nubinary/boilerplate_client.git
+cd boilerplate_client
+git-filter-repo --to-subdirectory-filter client
 
-mkdir boilerplate_mono
-cd boilerplate_mono
+cd ..
+
+git clone git@github.com:nubinary/boilerplate_server.git
+cd boilerplate_server
+git-filter-repo --to-subdirectory-filter server
+
+cd ../boilerplate_mono
 git init
-
-cp ../boilerplate_server/.env .
-
-git remote add boilerplate_server ../boilerplate_server
-git fetch boilerplate_server
-git checkout -b branch_boilerplate_server boilerplate_server/main
-mkdir server
-git mv -k * server/
-git cam "Moved boilerplate_server repo to server subdir"
-git checkout main
-git merge branch_boilerplate_server --allow-unrelated-histories
 
 git remote add boilerplate_client ../boilerplate_client
 git fetch boilerplate_client
-git checkout -b branch_boilerplate_client boilerplate_client/main
-mkdir client
-git mv -k * client/
-git mv .circleci/config.yml .devcontainer/devcontainer.json .dockerignore .gitignore client/
+git merge boilerplate_client/main --allow-unrelated-histories
 
-git cam "Moved boilerplate_client repo to client subdir"
-git checkout main
-git merge branch_boilerplate_client --allow-unrelated-histories
+git remote add boilerplate_server ../boilerplate_server
+git fetch boilerplate_server
+git merge boilerplate_server/main --allow-unrelated-histories
+
+
 
 
 
