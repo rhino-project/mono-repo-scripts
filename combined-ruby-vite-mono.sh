@@ -17,29 +17,13 @@ rm -rf ./rhino-project-template_rails_mono
 git clone git@github.com:rhino-project/rhino-project-template.git rhino-project-template_rails_mono
 
 cd ./rhino-project-template_rails_mono/server
-git co feat/pnpm
-git cob feature/single-repo
+git checkout feat/pnpm
+git checkout -b feature/single-repo
 
 cp ../../../rhino-project-template/server/.env .
 
-# git remote add boilerplate_client ../boilerplate_client
-# git fetch boilerplate_client
-
-# git checkout -b branch_boilerplate_client boilerplate_client/main
-# mkdir client_files
-# git mv -k * client_files/
 
 CLIENT_DOT_FILES=".npmrc .nvmrc .eslintrc.cjs .prettierrc.json .prettierignore .istanbul.yml"
-# for file in $CLIENT_DOT_FILES; do
-  # git mv client_files/$file .
-# done
-
-#git rm -r .circleci .devcontainer .dockerignore .editorconfig .gitignore
-#git cam "Moved boilerplate_client repo to client_files subdir"
-
-git co feature/single-repo
-#git merge branch_boilerplate_client --allow-unrelated-histories --no-edit
-
 for file in $CLIENT_DOT_FILES; do
  git mv ../client/$file .
 done
