@@ -12,6 +12,7 @@ rm -rf ./rhino-project-template_rails_mono
 git clone git@github.com:rhino-project/rhino-project-template.git rhino-project-template_rails_mono
 
 cd ./rhino-project-template_rails_mono/server
+git co feat/pnpm
 git cob feature/single-repo
 
 cp ../../../rhino-project-template/server/.env .
@@ -22,45 +23,43 @@ bundle exec vite install
 git add .
 git cam "Install vite_rails"
 
-exit
-
 # git remote add boilerplate_client ../boilerplate_client
 # git fetch boilerplate_client
 
-git checkout -b branch_boilerplate_client boilerplate_client/main
-mkdir client_files
-git mv -k * client_files/
+# git checkout -b branch_boilerplate_client boilerplate_client/main
+# mkdir client_files
+# git mv -k * client_files/
 
 CLIENT_DOT_FILES=".npmrc .nvmrc .eslintrc.json .prettierrc.json .prettierignore .istanbul.yml"
-for file in $CLIENT_DOT_FILES; do
-  git mv client_files/$file .
-done
+# for file in $CLIENT_DOT_FILES; do
+  # git mv client_files/$file .
+# done
 
-git rm -r .circleci .devcontainer .dockerignore .editorconfig .gitignore
-git cam "Moved boilerplate_client repo to client_files subdir"
+#git rm -r .circleci .devcontainer .dockerignore .editorconfig .gitignore
+#git cam "Moved boilerplate_client repo to client_files subdir"
 
 git co feature/single-repo
-git merge branch_boilerplate_client --allow-unrelated-histories --no-edit
+#git merge branch_boilerplate_client --allow-unrelated-histories --no-edit
 
 for file in $CLIENT_DOT_FILES; do
-  git mv client_files/$file .
+ git mv ../client/$file .
 done
 
-git mv -f client_files/vite.config.ts .
-git mv -f client_files/package.json .
-git mv -f client_files/package-lock.json .
-git mv client_files/tsconfig.json app/frontend/
-git mv client_files/src app/frontend/
+git mv -f ../client/vite.config.ts .
+git mv -f ../client/package.json .
+git mv -f ../client/pnpm-lock.yaml .
+git mv ../client/tsconfig.json app/frontend/
+git mv ../client/src app/frontend/
 git mv app/frontend/src/index.js app/frontend/entrypoints/index.js
-git mv client_files/cypress .
+git mv ../client/cypress .
 git rm app/frontend/entrypoints/application.js
 git commit -m "Moved files to desired locations"
 
-git rm -r client_files
-git commit -m "Removed client_files subdirectory"
+# git rm -r client_files
+# git commit -m "Removed client_files subdirectory"
 
-npm add -D vite-plugin-ruby
-npm i
+pnpm add -D vite-plugin-ruby
+pnpm i
 
 git cam "Add vite-plugin-ruby"
 
@@ -110,6 +109,8 @@ sed -i '' '/ActiveAdmin.routes(self)/a\
   root to: "frontend#root", via: :get' config/routes.rb
 
 git cam "Add frontend#root route"
+
+exit
 
 echo "patching $FIXUP_PATCH"
 patch -p1 < $FIXUP_PATCH
