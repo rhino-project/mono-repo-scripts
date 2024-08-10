@@ -7,23 +7,25 @@ DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 TESTS_PATCH="$SCRIPT_DIR/tests.patch"
 FRONTEND_TESTS_PATCH="$SCRIPT_DIR/frontend-tests.patch"
 
-rm -rf ./boilerplate_server_rails_mono
+rm -rf ./rhino-project-template_rails_mono
 
-git clone git@github.com:nubinary/boilerplate_server.git boilerplate_server_rails_mono
+git clone git@github.com:rhino-project/rhino-project-template.git rhino-project-template_rails_mono
 
-cd ./boilerplate_server_rails_mono
+cd ./rhino-project-template_rails_mono/server
 git cob feature/single-repo
 
-cp ../boilerplate_server/.env .
+cp ../../../rhino-project-template/server/.env .
 
 bundle add vite_rails
 bundle exec vite install
-rm -r node_modules
+# rm -r node_modules
 git add .
 git cam "Install vite_rails"
 
-git remote add boilerplate_client ../boilerplate_client
-git fetch boilerplate_client
+exit
+
+# git remote add boilerplate_client ../boilerplate_client
+# git fetch boilerplate_client
 
 git checkout -b branch_boilerplate_client boilerplate_client/main
 mkdir client_files
