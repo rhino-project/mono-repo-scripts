@@ -18,7 +18,7 @@ index 8aefb94..160b2b8 100644
 -    -->
 -
 +    <%= vite_react_refresh_tag %>
-+    <%= vite_javascript_tag 'index.jsx' %>
++    <%= vite_javascript_tag 'application.jsx' %>
    </head>
  
    <body>

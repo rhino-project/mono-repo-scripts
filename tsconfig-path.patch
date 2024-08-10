@@ -1,0 +1,11 @@
+diff --git a/server/tsconfig.json b/server/tsconfig.json
+index 34147a9..b14d2c6 100644
+--- a/server/tsconfig.json
++++ b/server/tsconfig.json
+@@ -25,5 +25,5 @@
+     "allowSyntheticDefaultImports": true,
+     "forceConsistentCasingInFileNames": true
+   },
+-  "include": ["src"]
++  "include": ["./app/frontend/entrypoints", "./app/frontend/src"]
+ }

@@ -1,7 +1,7 @@
-diff --git a/server/app/frontend/entrypoints/index.jsx b/server/app/frontend/entrypoints/index.jsx
+diff --git a/server/app/frontend/entrypoints/application.jsx b/server/app/frontend/entrypoints/application.jsx
 index 7541c54..c2f850a 100755
---- a/server/app/frontend/entrypoints/index.jsx
-+++ b/server/app/frontend/entrypoints/index.jsx
+--- a/server/app/frontend/entrypoints/application.jsx
++++ b/server/app/frontend/entrypoints/application.jsx
 @@ -3,12 +3,12 @@ import { createRoot } from 'react-dom/client';
  
  import modelLoader from '@rhino-project/core/models';

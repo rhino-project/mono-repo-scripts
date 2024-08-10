@@ -5,6 +5,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 APP_HTML_PATCH="$SCRIPT_DIR/app-html.patch"
 VITE_RUBY_PLUGIN_PATCH="$SCRIPT_DIR/vite-ruby-plugin.patch"
 ENTRY_POINT_PATCH="$SCRIPT_DIR/entrypoint.patch"
+TSCONFIG_PATH_PATCH="$SCRIPT_DIR/tsconfig-path.patch"
+
 FIXUP_PATCH="$SCRIPT_DIR/fixups.patch"
 DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 TESTS_PATCH="$SCRIPT_DIR/tests.patch"
@@ -46,6 +48,7 @@ done
 git mv -f ../client/vite.config.ts .
 git mv -f ../client/package.json .
 git mv -f ../client/pnpm-lock.yaml .
+git mv ../client/tsconfig.json .
 git mv ../client/tsconfig.node.json .
 
 # Cypress
@@ -62,8 +65,7 @@ git commit -m "Install vite_rails"
 
 # Core code
 git mv ../client/src app/frontend/
-git mv ../client/tsconfig.json app/frontend/
-git mv app/frontend/src/index.jsx app/frontend/entrypoints/index.jsx
+git mv app/frontend/src/index.jsx app/frontend/entrypoints/application.jsx
 git rm app/frontend/entrypoints/application.js
 
 git commit -m "Client src files"
@@ -128,6 +130,13 @@ git cam "Add vite ruby plugin"
 echo "patching $ENTRY_POINT_PATCH"
 patch -p2 < $ENTRY_POINT_PATCH
 git cam "Update entrypoint"
+
+echo "patching $TSCONFIG_PATH_PATCH"
+patch -p2 < $TSCONFIG_PATH_PATCH
+git cam "Update tsconfig paths"
+
+echo app/frontend/src/models/static.js > .prettierignore
+git cam "Ignore static.js in prettier"
 
 exit
 
