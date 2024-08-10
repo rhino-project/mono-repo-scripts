@@ -73,9 +73,6 @@ EOL
 
 echo "Content written to app/views/frontend/root.html.erb"
 
-# Create the directory if it doesn't exist
-mkdir -p app/controllers
-
 # Write the content to the file
 cat <<EOL > app/controllers/frontend_controller.rb
 # frozen_string_literal: true
@@ -123,10 +120,6 @@ echo app/frontend/src/models/static.js > .prettierignore
 git cam "Ignore static.js in prettier"
 
 exit
-
-echo "patching $FIXUP_PATCH"
-patch -p1 < $FIXUP_PATCH
-git cam "Fixup patch"
 
 echo "patching $DEVCONTAINER_PATCH"
 patch -p1 < $DEVCONTAINER_PATCH
