@@ -6,8 +6,8 @@ APP_HTML_PATCH="$SCRIPT_DIR/app-html.patch"
 VITE_RUBY_PLUGIN_PATCH="$SCRIPT_DIR/vite-ruby-plugin.patch"
 ENTRY_POINT_PATCH="$SCRIPT_DIR/entrypoint.patch"
 TSCONFIG_PATH_PATCH="$SCRIPT_DIR/tsconfig-path.patch"
+CYPRESS_STATIC_PATCH="$SCRIPT_DIR/cypress-static.patch"
 
-FIXUP_PATCH="$SCRIPT_DIR/fixups.patch"
 DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 TESTS_PATCH="$SCRIPT_DIR/tests.patch"
 FRONTEND_TESTS_PATCH="$SCRIPT_DIR/frontend-tests.patch"
@@ -118,6 +118,10 @@ git cam "Update tsconfig paths"
 
 echo app/frontend/src/models/static.js > .prettierignore
 git cam "Ignore static.js in prettier"
+
+echo "patching $CYPRESS_STATIC_PATCH"
+patch -p2 < $CYPRESS_STATIC_PATCH
+git cam "Update cypress static load"
 
 exit
 
