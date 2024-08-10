@@ -17,12 +17,6 @@ git cob feature/single-repo
 
 cp ../../../rhino-project-template/server/.env .
 
-bundle add vite_rails
-bundle exec vite install
-# rm -r node_modules
-git add .
-git cam "Install vite_rails"
-
 # git remote add boilerplate_client ../boilerplate_client
 # git fetch boilerplate_client
 
@@ -30,7 +24,7 @@ git cam "Install vite_rails"
 # mkdir client_files
 # git mv -k * client_files/
 
-CLIENT_DOT_FILES=".npmrc .nvmrc .eslintrc.json .prettierrc.json .prettierignore .istanbul.yml"
+CLIENT_DOT_FILES=".npmrc .nvmrc .eslintrc.cjs .prettierrc.json .prettierignore .istanbul.yml"
 # for file in $CLIENT_DOT_FILES; do
   # git mv client_files/$file .
 # done
@@ -48,9 +42,18 @@ done
 git mv -f ../client/vite.config.ts .
 git mv -f ../client/package.json .
 git mv -f ../client/pnpm-lock.yaml .
+
+bundle add vite_rails
+bundle exec vite install
+# rm -r node_modules
+git add .
+git cam "Install vite_rails"
+
+exit
+
 git mv ../client/tsconfig.json app/frontend/
 git mv ../client/src app/frontend/
-git mv app/frontend/src/index.js app/frontend/entrypoints/index.js
+git mv app/frontend/src/index.jsx app/frontend/entrypoints/index.jsx
 git mv ../client/cypress .
 git rm app/frontend/entrypoints/application.js
 git commit -m "Moved files to desired locations"
