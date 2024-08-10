@@ -4,6 +4,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 APP_HTML_PATCH="$SCRIPT_DIR/app-html.patch"
 VITE_RUBY_PLUGIN_PATCH="$SCRIPT_DIR/vite-ruby-plugin.patch"
+ENTRY_POINT_PATCH="$SCRIPT_DIR/entrypoint.patch"
 FIXUP_PATCH="$SCRIPT_DIR/fixups.patch"
 DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 TESTS_PATCH="$SCRIPT_DIR/tests.patch"
@@ -123,6 +124,10 @@ git cam "Update application.html.erb"
 echo "patching $VITE_RUBY_PLUGIN_PATCH"
 patch -p2 < $VITE_RUBY_PLUGIN_PATCH
 git cam "Add vite ruby plugin"
+
+echo "patching $ENTRY_POINT_PATCH"
+patch -p2 < $ENTRY_POINT_PATCH
+git cam "Update entrypoint"
 
 exit
 
