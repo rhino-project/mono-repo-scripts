@@ -1,0 +1,24 @@
+diff --git a/server/app/views/layouts/application.html.erb b/server/app/views/layouts/application.html.erb
+index 8aefb94..160b2b8 100644
+--- a/server/app/views/layouts/application.html.erb
++++ b/server/app/views/layouts/application.html.erb
+@@ -4,17 +4,8 @@
+     <title><%= Rails.application.class.module_parent_name %></title>
+     <%= csrf_meta_tags %>
+     <%= vite_client_tag %>
+-    <%= vite_javascript_tag 'application' %>
+-    <!--
+-      If using a TypeScript entrypoint file:
+-        vite_typescript_tag 'application'
+-
+-      If using a .jsx or .tsx entrypoint, add the extension:
+-        vite_javascript_tag 'application.jsx'
+-
+-      Visit the guide for more information: https://vite-ruby.netlify.app/guide/rails
+-    -->
+-
++    <%= vite_react_refresh_tag %>
++    <%= vite_javascript_tag 'index.jsx' %>
+   </head>
+ 
+   <body>

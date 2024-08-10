@@ -2,6 +2,8 @@
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+APP_HTML_PATCH="$SCRIPT_DIR/app-html.patch"
+VITE_RUBY_PLUGIN_PATCH="$SCRIPT_DIR/vite-ruby-plugin.patch"
 FIXUP_PATCH="$SCRIPT_DIR/fixups.patch"
 DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 TESTS_PATCH="$SCRIPT_DIR/tests.patch"
@@ -50,11 +52,12 @@ git mv ../client/tsconfig.cypress.json .
 git mv ../client/cypress.config.ts .
 git mv ../client/cypress .
 
+git commit -m "Move configuration files"
+
 bundle add vite_rails
 bundle exec vite install
-# rm -r node_modules
 git add .
-git cam "Install vite_rails"
+git commit -m "Install vite_rails"
 
 # Core code
 git mv ../client/src app/frontend/
@@ -62,22 +65,15 @@ git mv ../client/tsconfig.json app/frontend/
 git mv app/frontend/src/index.jsx app/frontend/entrypoints/index.jsx
 git rm app/frontend/entrypoints/application.js
 
-git commit -m "Moved files to desired locations"
-
-exit
-
-# git rm -r client_files
-# git commit -m "Removed client_files subdirectory"
-
-# pnpm add -D vite-plugin-ruby
-# pnpm i
-
-# git cam "Add vite-plugin-ruby"
+git commit -m "Client src files"
 
 # Extract the value of ROOT_URL
 ROOT_URL_VALUE=$(grep "ROOT_URL=" .env | cut -d '=' -f2)
 # Replace the value of FRONT_END_URL with the value of ROOT_URL
 sed -i '' "s|FRONT_END_URL=.*|FRONT_END_URL=$ROOT_URL_VALUE|" .env
+grep -q "^VITE_API_ROOT_PATH=" .env && \
+  sed -i '' "s|^VITE_API_ROOT_PATH=.*|VITE_API_ROOT_PATH=$ROOT_URL_VALUE|" .env || \
+  echo "VITE_API_ROOT_PATH=$ROOT_URL_VALUE" >> .env
 
 # Create the directory if it doesn't exist
 mkdir -p app/views/frontend
@@ -85,11 +81,10 @@ mkdir -p app/views/frontend
 # Write the content to the file
 cat <<EOL > app/views/frontend/root.html.erb
 <noscript>You need to enable JavaScript to run this app.</noscript>
-<div id="root"></div>
+<div id="root" class="h-100"></div>
 EOL
 
 echo "Content written to app/views/frontend/root.html.erb"
-
 
 # Create the directory if it doesn't exist
 mkdir -p app/controllers
@@ -120,6 +115,14 @@ sed -i '' '/ActiveAdmin.routes(self)/a\
   root to: "frontend#root", via: :get' config/routes.rb
 
 git cam "Add frontend#root route"
+
+echo "patching $APP_HTML_PATCH"
+patch -p2 < $APP_HTML_PATCH
+git cam "Update application.html.erb"
+
+echo "patching $VITE_RUBY_PLUGIN_PATCH"
+patch -p2 < $VITE_RUBY_PLUGIN_PATCH
+git cam "Add vite ruby plugin"
 
 exit
 
