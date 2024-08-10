@@ -39,9 +39,16 @@ for file in $CLIENT_DOT_FILES; do
  git mv ../client/$file .
 done
 
+# Configuration files
 git mv -f ../client/vite.config.ts .
 git mv -f ../client/package.json .
 git mv -f ../client/pnpm-lock.yaml .
+git mv ../client/tsconfig.node.json .
+
+# Cypress
+git mv ../client/tsconfig.cypress.json .
+git mv ../client/cypress.config.ts .
+git mv ../client/cypress .
 
 bundle add vite_rails
 bundle exec vite install
@@ -49,22 +56,23 @@ bundle exec vite install
 git add .
 git cam "Install vite_rails"
 
-exit
-
-git mv ../client/tsconfig.json app/frontend/
+# Core code
 git mv ../client/src app/frontend/
+git mv ../client/tsconfig.json app/frontend/
 git mv app/frontend/src/index.jsx app/frontend/entrypoints/index.jsx
-git mv ../client/cypress .
 git rm app/frontend/entrypoints/application.js
+
 git commit -m "Moved files to desired locations"
+
+exit
 
 # git rm -r client_files
 # git commit -m "Removed client_files subdirectory"
 
-pnpm add -D vite-plugin-ruby
-pnpm i
+# pnpm add -D vite-plugin-ruby
+# pnpm i
 
-git cam "Add vite-plugin-ruby"
+# git cam "Add vite-plugin-ruby"
 
 # Extract the value of ROOT_URL
 ROOT_URL_VALUE=$(grep "ROOT_URL=" .env | cut -d '=' -f2)
