@@ -1,51 +1,19 @@
-commit cea442df2be98dd899a8313be9d82539eb48c423
-Author: JP Rosevear <jp@nubinary.com>
-Date:   Mon Oct 9 10:02:56 2023 -0400
-
-    Circle ci updates
-
-diff --git a/.circleci/config.yml b/.circleci/config.yml
-index abeb2b38..1639b7d7 100644
---- a/.circleci/config.yml
-+++ b/.circleci/config.yml
-@@ -1,5 +1,6 @@
- version: 2.1
- orbs:
-+  node: circleci/node@5.1.0
-   ruby: circleci/ruby@2.1.0
- jobs:
-   build:
-@@ -29,6 +30,8 @@ jobs:
-     steps:
-       - checkout
-       - ruby/install-deps
-+      - node/install
-+      - node/install-packages
-       - ruby/rubocop-check
-       - run:
-           name: Brakeman Checks
-
-commit 53a4f7085f2fc6773a689c9d2f7d9d323b7323ab
-Author: JP Rosevear <jp@nubinary.com>
-Date:   Mon Oct 9 09:58:12 2023 -0400
-
-    Fix test
-
-diff --git a/test/controllers/default_routing_controller_test.rb b/test/controllers/default_routing_controller_test.rb
-index 5f4bff38..e6d16fcc 100644
---- a/test/controllers/default_routing_controller_test.rb
-+++ b/test/controllers/default_routing_controller_test.rb
-@@ -3,11 +3,11 @@
+diff --git a/server/test/controllers/default_routing_controller_test.rb b/server/test/controllers/default_routing_controller_test.rb
+index 4e90efa..5dbf6e8 100644
+--- a/server/test/controllers/default_routing_controller_test.rb
++++ b/server/test/controllers/default_routing_controller_test.rb
+@@ -3,11 +3,9 @@
  require "test_helper"
  
  class DefaultRoutingControllerTest < ActionDispatch::IntegrationTest
 -  %i[get delete patch post put].each do |request|
-+  %i[get].each do |request|
-     test "root via #{request} redirects to frontend" do
-       send(request, "/")
+-    test "root via #{request} redirects to frontend" do
+-      send(request, "/")
++  test "root redirects to frontend" do
++    send(:get, "/")
  
--      assert_redirected_to ENV["FRONT_END_URL"]
-+      assert_response :success
-     end
+-      assert_redirected_to ENV.fetch("FRONT_END_URL", nil)
+-    end
++    assert_response :success
    end
  end

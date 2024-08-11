@@ -123,15 +123,15 @@ echo "patching $CYPRESS_STATIC_PATCH"
 patch -p2 < $CYPRESS_STATIC_PATCH
 git cam "Update cypress static load"
 
+echo "patching $TESTS_PATCH"
+patch -p2 < $TESTS_PATCH
+git cam "Tests patch"
+
 exit
 
 echo "patching $DEVCONTAINER_PATCH"
 patch -p1 < $DEVCONTAINER_PATCH
 git cam "Devcontainer patch"
-
-echo "patching $TESTS_PATCH"
-patch -p1 < $TESTS_PATCH
-git cam "Tests patch"
 
 echo "patching $FRONTEND_TESTS_PATCH"
 patch -p1 < $FRONTEND_TESTS_PATCH
