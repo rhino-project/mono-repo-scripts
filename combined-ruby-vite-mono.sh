@@ -137,3 +137,13 @@ echo "patching $FRONTEND_TESTS_PATCH"
 patch -p1 < $FRONTEND_TESTS_PATCH
 git add cypress.config.ts
 git cam "Frontend tests patch"
+
+
+## TODO
+# Unified docker dev environment
+# Unified docker prod environment
+# Docker compose updates
+# Devcontainer
+# Procfile updates?
+# README fixes
+# Index.html support (Segment, Stripe)
