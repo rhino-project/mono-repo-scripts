@@ -7,13 +7,13 @@ index 7541c54..c2f850a 100755
  import modelLoader from '@rhino-project/core/models';
  
 -import './styles/styles.scss';
-+import '@/src/styles/styles.scss';
++import '@/styles/styles.scss';
  
  modelLoader.loadModels().then(async () => {
    // Import the Root dynamically so that other modelLoader uses are assured
    // to have access to the already loaded models
 -  const { default: Root } = await import('./Root');
-+  const { default: Root } = await import('@/src/Root');
++  const { default: Root } = await import('@/Root');
  
    const container = document.getElementById('root');
    const root = createRoot(container);

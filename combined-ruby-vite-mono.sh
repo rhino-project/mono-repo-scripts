@@ -131,13 +131,14 @@ git cam "Tests patch"
 # From installation of ruby vite
 rm -rf node_modules
 rm -rf .bundle
+
 git mv -f * ..
 git mv .rubocop.yml ..
 git mv .ruby-version ..
 git mv .simplecov ..
 git mv -f .gitignore ..
 git mv -f .dockerignore ..
-cat ../client/.dockerignore >> ../.dockerignore
+echo "" >> ../.dockerignore && cat ../client/.dockerignore >> ../.dockerignore
 
 # Already covered at the top
 git rm -rf .vscode
@@ -151,8 +152,10 @@ for file in $CLIENT_DOT_FILES; do
  git mv $file ..
 done
 
+cd ..
+rm -rf server
 
-
+git cam "Move server files to top level"
 
 exit
 
