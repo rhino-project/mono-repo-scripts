@@ -171,8 +171,7 @@ git cam "Frontend tests patch"
 
 
 ## TODO
-# Location of source files
-# Virtual module paths
+# Fix assets
 # static.js write path in plugin
 # Unified docker dev environment
 # Unified docker prod environment
@@ -182,5 +181,9 @@ git cam "Frontend tests patch"
 # Procfile updates?
 # README fixes
 # Index.html support (Segment, Stripe)
+
+## DONE
+# Location of source files
+# Virtual module paths
 # Move files to top level
 
