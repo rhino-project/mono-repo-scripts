@@ -5,7 +5,7 @@ index aa9e634..596775a 100644
 @@ -1,5 +1,5 @@
  import { faker } from '@faker-js/faker';
 -import api from '../../src/models/static';
-+import api from '../../app/frontend/src/models/static';
++import api from '../../app/frontend/models/static';
  
  describe('signup', () => {
    it('signup screen works', function () {

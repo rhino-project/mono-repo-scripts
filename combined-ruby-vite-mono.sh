@@ -126,7 +126,10 @@ git cam "Update cypress static load"
 
 echo "patching $TESTS_PATCH"
 patch -p2 < $TESTS_PATCH
-git cam "Tests patch"
+
+echo "patching $FRONTEND_TESTS_PATCH"
+patch -p1 < $FRONTEND_TESTS_PATCH
+git cam "Frontend ests patch"
 
 # From installation of ruby vite
 rm -rf node_modules
@@ -163,20 +166,10 @@ echo "patching $DEVCONTAINER_PATCH"
 patch -p1 < $DEVCONTAINER_PATCH
 git cam "Devcontainer patch"
 
-echo "patching $FRONTEND_TESTS_PATCH"
-patch -p1 < $FRONTEND_TESTS_PATCH
-git add cypress.config.ts
-git cam "Frontend tests patch"
-
-
-
 ## TODO
-# Fix assets
-# static.js write path in plugin
 # Unified docker dev environment
 # Unified docker prod environment
 # Docker compose updates
-# Docker ignore updates
 # Devcontainer
 # Procfile updates?
 # README fixes
@@ -186,4 +179,7 @@ git cam "Frontend tests patch"
 # Location of source files
 # Virtual module paths
 # Move files to top level
+# Fix assets
+# Docker ignore updates
+# static.js write path in plugin
 

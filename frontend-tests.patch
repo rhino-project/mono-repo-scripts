@@ -1,114 +1,13 @@
-diff --git a/.circleci/config.yml b/.circleci/config.yml
-index 1639b7d7..54045fa6 100644
---- a/.circleci/config.yml
-+++ b/.circleci/config.yml
-@@ -1,12 +1,13 @@
- version: 2.1
- orbs:
-+  cypress: cypress-io/cypress@3.1.4
-   node: circleci/node@5.1.0
-   ruby: circleci/ruby@2.1.0
- jobs:
-   build:
-     parallelism: 1
-     docker:
--      - image: cimg/ruby:3.1.4-node
-+      - image: cimg/ruby:3.1.4-browsers
-         environment:
-           BUNDLE_JOBS: 3
-           BUNDLE_RETRY: 3
-@@ -16,11 +17,14 @@ jobs:
-           PGUSER: circleci-demo-ruby
-           RAILS_ENV: test
-           ROOT_URL: http://localhost:3000
--          FRONT_END_URL: http://localhost:3001
-+          FRONT_END_URL: http://localhost:3000
-           DB_NAME: rails_blog
-           DB_USERNAME: circleci-demo-ruby
-           DB_PASSWORD: ""
-           STRIPE_SECRET_KEY: "FOR_TESTS"
-+          REACT_APP_API_ROOT_PATH: http://localhost:3000
-+          RAILS_SERVE_STATIC_FILES: 1
-+          DISABLE_SSL: 1
-       - image: cimg/postgres:12.10
-         environment:
-           POSTGRES_USER: circleci-demo-ruby
-@@ -57,6 +61,27 @@ jobs:
-             bin/rails rhino:dummy subscriptions db:setup && bin/rails rhino:coverage subscriptions
-             bin/rails rhino:dummy notifications db:setup && bin/rails rhino:coverage notifications
- 
-+      - run:
-+          name: Seed production database
-+          command: RAILS_ENV=production bin/rails db:reset
-+
-+      - run:
-+          name: Compile assets
-+          command: RAILS_ENV=production bin/rails assets:precompile
-+
-+      - run:
-+          name: run server
-+          command: RAILS_ENV=production  bin/rails server
-+          background: true
-+
-+      - run:
-+          name: Wait for servers
-+          command: |
-+            curl -I http://localhost:3000 --retry 5 --retry-all-errors --retry-delay 10 --max-time 60 --connect-timeout 10
-+
-+      - cypress/run-tests:
-+          cypress-command: npx cypress run
-+
-       # Save test results for timing analysis
-       - store_test_results:
-           path: test_results
-diff --git a/config/initializers/devise_token_auth.rb b/config/initializers/devise_token_auth.rb
-index 442ffb39..314e640f 100644
---- a/config/initializers/devise_token_auth.rb
-+++ b/config/initializers/devise_token_auth.rb
-@@ -1,10 +1,10 @@
- DeviseTokenAuth.setup do |config|
-   config.cookie_enabled = true
-   config.cookie_attributes = {
--    secure: true,
-+    secure: ENV.fetch('DISABLE_SSL', false) ? false : true,
-     httponly: true,
-     expires: 1.day,
--    same_site: "None"
-+    same_site: ENV.fetch('DISABLE_SSL', false) ? "Lax" : "None"
-     # WARNING: the :domain attribute specifies to whom the cookie will be sent to. It's recommended to leave it empty, so it acts in the most restrictive way as per https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#domain-and-path-attributes
-   }
-   # By default the authorization headers will change after each request. The
-diff --git a/cypress.config.ts b/cypress.config.ts
-new file mode 100644
-index 00000000..d3d696aa
---- /dev/null
-+++ b/cypress.config.ts
-@@ -0,0 +1,19 @@
-+import { defineConfig } from 'cypress';
-+import { loadEnv } from 'vite';
-+
-+const env = loadEnv('testing', process.cwd(), '');
-+
-+export default defineConfig({
-+  e2e: {
-+    // We've imported your old cypress plugins here.
-+    // You may want to clean this up later by importing these.
-+    setupNodeEvents(on, config) {
-+      return require('./cypress/plugins/index.js')(on, config);
-+    },
-+    baseUrl: `http://localhost:${env.PORT || 3000}`,
-+    env: {
-+      PORT: env.PORT || 3000,
-+      REACT_APP_API_ROOT_PATH: env.REACT_APP_API_ROOT_PATH
-+    }
-+  }
-+});
-diff --git a/db/seeds.rb b/db/seeds.rb
-index 7d4af312..72ef92a4 100644
---- a/db/seeds.rb
-+++ b/db/seeds.rb
-@@ -8,3 +8,4 @@
- #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
- #   Character.create(name: 'Luke', movie: movies.first)
- AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?
-+User.create!(email: 'test@example.com', password: 'password', password_confirmation: 'password', confirmed_at: DateTime.now)
+diff --git a/vite.config.ts b/vite.config.ts
+index 58fab5d..1ac2ef3 100644
+--- a/vite.config.ts
++++ b/vite.config.ts
+@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => {
+     test: {
+       environment: 'jsdom',
+       globals: true,
+-      setupFiles: ['src/__tests__/shared/setupTests'],
++      setupFiles: ['__tests__/shared/setupTests'],
+       // For now until speed improves https://dev.to/thejaredwilcurt/improving-vitest-performance-42c6
+       testTimeout: 10000
+     }
