@@ -48,11 +48,12 @@ git add .
 git commit -m "Install vite_rails"
 
 # Core code
-git mv ../client/src app/frontend/
-git mv app/frontend/src/index.jsx app/frontend/entrypoints/application.jsx
-git rm app/frontend/entrypoints/application.js
+rm -rf app/frontend
+git mv ../client/src app/frontend
+mkdir -p app/frontend/entrypoints
+git mv app/frontend/index.jsx app/frontend/entrypoints/application.jsx
 
-git commit -m "Client src files"
+git commit -m "Client files"
 
 # Extract the value of ROOT_URL
 ROOT_URL_VALUE=$(grep "ROOT_URL=" .env | cut -d '=' -f2)
@@ -116,7 +117,7 @@ echo "patching $TSCONFIG_PATH_PATCH"
 patch -p2 < $TSCONFIG_PATH_PATCH
 git cam "Update tsconfig paths"
 
-echo app/frontend/src/models/static.js > .prettierignore
+echo app/frontend/models/static.js > .prettierignore
 git cam "Ignore static.js in prettier"
 
 echo "patching $CYPRESS_STATIC_PATCH"
@@ -126,6 +127,32 @@ git cam "Update cypress static load"
 echo "patching $TESTS_PATCH"
 patch -p2 < $TESTS_PATCH
 git cam "Tests patch"
+
+# From installation of ruby vite
+rm -rf node_modules
+rm -rf .bundle
+git mv -f * ..
+git mv .rubocop.yml ..
+git mv .ruby-version ..
+git mv .simplecov ..
+git mv -f .gitignore ..
+git mv -f .dockerignore ..
+cat ../client/.dockerignore >> ../.dockerignore
+
+# Already covered at the top
+git rm -rf .vscode
+git rm .tool-versions
+
+mv .env ..
+
+# Yes, we are moving them twice, but we don't want to rewrite this script
+CLIENT_DOT_FILES=".npmrc .nvmrc .eslintrc.cjs .prettierrc.json .prettierignore .istanbul.yml"
+for file in $CLIENT_DOT_FILES; do
+ git mv $file ..
+done
+
+
+
 
 exit
 
@@ -139,11 +166,18 @@ git add cypress.config.ts
 git cam "Frontend tests patch"
 
 
+
 ## TODO
+# Location of source files
+# Virtual module paths
+# static.js write path in plugin
 # Unified docker dev environment
 # Unified docker prod environment
 # Docker compose updates
+# Docker ignore updates
 # Devcontainer
 # Procfile updates?
 # README fixes
 # Index.html support (Segment, Stripe)
+# Move files to top level
+
