@@ -167,6 +167,7 @@ echo "patching $DOCKER_DEV_PATCH"
 patch -p1 < $DOCKER_DEV_PATCH
 git rm -f docker-compose.yml
 git rm -f client-override.yml
+git add ./bin/dev-vite-entrypoint.sh
 chmod +x ./bin/dev-vite-entrypoint.sh
 git cam "Docker dev patch"
 
@@ -177,7 +178,6 @@ patch -p1 < $DEVCONTAINER_PATCH
 git cam "Devcontainer patch"
 
 ## TODO
-# Unified docker dev environment
 # Unified docker prod environment
 # Docker compose updates
 # Devcontainer
@@ -192,4 +192,5 @@ git cam "Devcontainer patch"
 # Fix assets
 # Docker ignore updates
 # static.js write path in plugin
+# Unified docker dev environment
 
