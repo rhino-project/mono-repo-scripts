@@ -7,10 +7,12 @@ VITE_RUBY_PLUGIN_PATCH="$SCRIPT_DIR/vite-ruby-plugin.patch"
 ENTRY_POINT_PATCH="$SCRIPT_DIR/entrypoint.patch"
 TSCONFIG_PATH_PATCH="$SCRIPT_DIR/tsconfig-path.patch"
 CYPRESS_STATIC_PATCH="$SCRIPT_DIR/cypress-static.patch"
-
-DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 TESTS_PATCH="$SCRIPT_DIR/tests.patch"
 FRONTEND_TESTS_PATCH="$SCRIPT_DIR/frontend-tests.patch"
+DOCKER_DEV_PATCH="$SCRIPT_DIR/docker-dev.patch"
+
+DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
+
 
 rm -rf ./rhino-project-template_rails_mono
 
@@ -129,7 +131,7 @@ patch -p2 < $TESTS_PATCH
 
 echo "patching $FRONTEND_TESTS_PATCH"
 patch -p1 < $FRONTEND_TESTS_PATCH
-git cam "Frontend ests patch"
+git cam "Frontend tests patch"
 
 # From installation of ruby vite
 rm -rf node_modules
@@ -159,6 +161,14 @@ cd ..
 rm -rf server
 
 git cam "Move server files to top level"
+
+
+echo "patching $DOCKER_DEV_PATCH"
+patch -p1 < $DOCKER_DEV_PATCH
+git rm -f docker-compose.yml
+git rm -f client-override.yml
+chmod +x ./bin/dev-vite-entrypoint.sh
+git cam "Docker dev patch"
 
 exit
 

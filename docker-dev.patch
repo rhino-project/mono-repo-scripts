@@ -1,0 +1,166 @@
+commit 39e78eefe3a86e524dc55b7c5ab926961c9aa8f8
+Author: JP Rosevear <jp@codalio.com>
+Date:   Fri Sep 6 08:26:10 2024 -0400
+
+    Docker dev patch
+
+diff --git a/Dockerfile.development b/Dockerfile.development
+index 8d8a9e3..27d708e 100644
+--- a/Dockerfile.development
++++ b/Dockerfile.development
+@@ -1,14 +1,10 @@
+ FROM ruby:3.3.4
+ 
+-ENV APP_PATH=/app/server \
++ENV APP_PATH=/app \
+   BUNDLE_VERSION=2.5.13 \
+   BUNDLE_PATH=/usr/local/bundle/gems \
+   TMP_PATH=/tmp/
+ 
+-# copy entrypoint scripts and grant execution permissions
+-COPY ./bin/dev-docker-entrypoint.sh /usr/local/bin/dev-entrypoint.sh
+-RUN chmod +x /usr/local/bin/dev-entrypoint.sh
+-
+ # Install useful packages
+ # postgresql-client is for psql to run rails db
+ RUN set -ex \
+@@ -16,6 +12,15 @@ RUN set -ex \
+   && apt-get -y install git imagemagick graphviz postgresql-client \
+   && mkdir -p $APP_PATH
+ 
++# Install JavaScript dependencies
++ARG NODE_VERSION=20.14.0
++ARG PNPM_VERSION=9.9.0
++ENV PATH=/usr/local/node/bin:$PATH
++RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
++  /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
++  npm install -g pnpm@$PNPM_VERSION && \
++  rm -rf /tmp/node-build-master
++
+ RUN gem install bundler --version "$BUNDLE_VERSION" \
+   && rm -rf $GEM_HOME/cache/*
+ 
+diff --git a/bin/dev-docker-entrypoint.sh b/bin/dev-docker-entrypoint.sh
+index 6b98e71..b956ad5 100755
+--- a/bin/dev-docker-entrypoint.sh
++++ b/bin/dev-docker-entrypoint.sh
+@@ -13,6 +13,9 @@ bundle exec rails rhino:dev:setup -- --no-prompt --skip-existing --defaults=dock
+ # Set up db if it does not exist or run migrations
+ bundle exec rails db:prepare
+ 
++# Install modules
++pnpm install
++
+ # # Remove pre-existing puma/passenger server.pid
+ rm -f $APP_PATH/tmp/pids/server.pid
+ 
+diff --git a/bin/dev-vite-entrypoint.sh b/bin/dev-vite-entrypoint.sh
+new file mode 100755
+index 0000000..2b4abab
+--- /dev/null
++++ b/bin/dev-vite-entrypoint.sh
+@@ -0,0 +1,7 @@
++#!/bin/sh
++
++set -e
++
++echo $PWD
++
++bin/vite dev
+diff --git a/client-override.yml b/client-override.yml
+deleted file mode 100644
+index 2f98292..0000000
+--- a/client-override.yml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-services:
+-  frontend:
+-    depends_on:
+-      backend:
+-        condition: service_healthy
+diff --git a/docker-compose.yaml b/docker-compose.yaml
+index 918d98b..4ec538c 100644
+--- a/docker-compose.yaml
++++ b/docker-compose.yaml
+@@ -5,17 +5,17 @@ volumes:
+   db_data:
+   redis_data:
+   gem_cache:
++  node_cache:
+   shared_data:
+ services:
+-  backend:
++  rails:
+     build:
+       context: .
+       dockerfile: Dockerfile.development
+     volumes:
+       - .:/app
+       # Don't mix node_modules between host and container
+-      - /app/client/node_modules
+-      - shared_data:/var/shared
++      - node_cache:/app/node_modules
+       - gem_cache:/usr/local/bundle/gems
+     networks:
+       - development
+@@ -24,17 +24,18 @@ services:
+     stdin_open: true
+     tty: true
+     init: true
+-    entrypoint: dev-entrypoint.sh
++    entrypoint: ./bin/dev-docker-entrypoint.sh
+     # Just keep the backend open
+-    command: ["rails", "server", "-b", "0.0.0.0", "-p", "${PORT:-3000}"]
++    command: ['rails', 'server', '-b', '0.0.0.0', '-p', '${PORT:-3000}']
+     environment:
+       RAILS_ENV: development
+       DB_HOST: db
+       DB_USERNAME: ${DB_USERNAME:-postgres}
+       DB_PASSWORD: ${DB_PASSWORD:-password}
+       REDIS_URL: redis://redis:6379/${REDIS_DATABASE:-0}
++      VITE_RUBY_HOST: vite
+     healthcheck:
+-      test: "curl -f http://localhost:${PORT:-3000}/admin/login || exit 1"
++      test: 'curl -f http://localhost:${PORT:-3000}/admin/login || exit 1'
+       interval: 30s
+       timeout: 10s
+       retries: 3
+@@ -43,6 +44,26 @@ services:
+     depends_on:
+       - db
+       - redis
++  vite:
++    build:
++      context: .
++      dockerfile: Dockerfile.development
++    depends_on:
++      rails:
++        condition: service_healthy
++    entrypoint: ./bin/dev-vite-entrypoint.sh
++    environment:
++      DEBUG: '*vite*'
++      RAILS_ENV: development
++      VITE_RUBY_HOST: 0.0.0.0
++    init: true
++    ports:
++      - '3036:3036'
++    volumes:
++      - .:/app
++      # Don't mix node_modules between host and container
++      - node_cache:/app/node_modules
++      - gem_cache:/usr/local/bundle/gems
+   db:
+     image: postgres:12.5-alpine
+     volumes:
+diff --git a/docker-compose.yml b/docker-compose.yml
+deleted file mode 100644
+index 07328d4..0000000
+--- a/docker-compose.yml
++++ /dev/null
+@@ -1,6 +0,0 @@
+-include:
+-  - path:
+-      - server/docker-compose.yaml
+-  - path:
+-      - client/docker-compose.yaml
+-      - client-override.yml
