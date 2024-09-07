@@ -10,6 +10,9 @@ CYPRESS_STATIC_PATCH="$SCRIPT_DIR/cypress-static.patch"
 TESTS_PATCH="$SCRIPT_DIR/tests.patch"
 FRONTEND_TESTS_PATCH="$SCRIPT_DIR/frontend-tests.patch"
 DOCKER_DEV_PATCH="$SCRIPT_DIR/docker-dev.patch"
+DOCKER_PATCH="$SCRIPT_DIR/docker.patch"
+GHA_PATCH="$SCRIPT_DIR/gha.patch"
+ROOT_HTML_PATCH="$SCRIPT_DIR/root_html.patch"
 
 DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 
@@ -171,6 +174,18 @@ git add ./bin/dev-vite-entrypoint.sh
 chmod +x ./bin/dev-vite-entrypoint.sh
 git cam "Docker dev patch"
 
+echo "patching $DOCKER_PATCH"
+patch -p1 < $DOCKER_PATCH
+git cam "Docker patch"
+
+echo "patching $GHA_PATCH"
+patch -p1 < $GHA_PATCH
+git cam "Github actions patch"
+
+echo "patching $ROOT_HTML_PATCH"
+patch -p1 < $ROOT_HTML_PATCH
+git cam "Root html patch"
+
 exit
 
 echo "patching $DEVCONTAINER_PATCH"
@@ -178,10 +193,8 @@ patch -p1 < $DEVCONTAINER_PATCH
 git cam "Devcontainer patch"
 
 ## TODO
-# Unified docker prod environment
-# Docker compose updates
+# Unified docker prod environment for deployment (testing)
 # Devcontainer
-# Procfile updates?
 # README fixes
 # Index.html support (Segment, Stripe)
 
@@ -193,4 +206,7 @@ git cam "Devcontainer patch"
 # Docker ignore updates
 # static.js write path in plugin
 # Unified docker dev environment
+# Docker compose updates
+# Github actions
+# Procfile updates?
 
