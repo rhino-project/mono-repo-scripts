@@ -1,17 +1,17 @@
-commit 39e78eefe3a86e524dc55b7c5ab926961c9aa8f8
+commit 7583d334f277e3aa7f9ff15163be537e3f965b43
 Author: JP Rosevear <jp@codalio.com>
-Date:   Fri Sep 6 08:26:10 2024 -0400
+Date:   Sat Sep 7 16:43:22 2024 -0400
 
     Docker dev patch
 
 diff --git a/Dockerfile.development b/Dockerfile.development
-index 8d8a9e3..27d708e 100644
+index 8db557b..27d708e 100644
 --- a/Dockerfile.development
 +++ b/Dockerfile.development
 @@ -1,14 +1,10 @@
  FROM ruby:3.3.4
  
--ENV APP_PATH=/app/server \
+-ENV APP_PATH=/var/server \
 +ENV APP_PATH=/app \
    BUNDLE_VERSION=2.5.13 \
    BUNDLE_PATH=/usr/local/bundle/gems \
@@ -41,21 +41,25 @@ index 8d8a9e3..27d708e 100644
    && rm -rf $GEM_HOME/cache/*
  
 diff --git a/bin/dev-docker-entrypoint.sh b/bin/dev-docker-entrypoint.sh
-index 6b98e71..b956ad5 100755
+index a6aae2e..5814b85 100755
 --- a/bin/dev-docker-entrypoint.sh
 +++ b/bin/dev-docker-entrypoint.sh
-@@ -13,6 +13,9 @@ bundle exec rails rhino:dev:setup -- --no-prompt --skip-existing --defaults=dock
+@@ -13,8 +13,11 @@ bundle exec bin/rails rhino:dev:setup -- --no-prompt --skip-existing --defaults=
  # Set up db if it does not exist or run migrations
- bundle exec rails db:prepare
+ bundle exec bin/rails db:prepare
  
 +# Install modules
-+pnpm install
++npm install
 +
  # # Remove pre-existing puma/passenger server.pid
  rm -f $APP_PATH/tmp/pids/server.pid
  
+ # run passed commands
+-bundle exec ${@}
+\ No newline at end of file
++bundle exec ${@}
 diff --git a/bin/dev-vite-entrypoint.sh b/bin/dev-vite-entrypoint.sh
-new file mode 100755
+new file mode 100644
 index 0000000..2b4abab
 --- /dev/null
 +++ b/bin/dev-vite-entrypoint.sh
@@ -68,10 +72,9 @@ index 0000000..2b4abab
 +
 +bin/vite dev
 diff --git a/client-override.yml b/client-override.yml
-deleted file mode 100644
-index 2f98292..0000000
+index 2f98292..e69de29 100644
 --- a/client-override.yml
-+++ /dev/null
++++ b/client-override.yml
 @@ -1,5 +0,0 @@
 -services:
 -  frontend:
@@ -79,31 +82,31 @@ index 2f98292..0000000
 -      backend:
 -        condition: service_healthy
 diff --git a/docker-compose.yaml b/docker-compose.yaml
-index 918d98b..4ec538c 100644
+index 6b0a770..4f5a7d8 100644
 --- a/docker-compose.yaml
 +++ b/docker-compose.yaml
-@@ -5,17 +5,17 @@ volumes:
+@@ -5,6 +5,7 @@ volumes:
    db_data:
    redis_data:
    gem_cache:
 +  node_cache:
    shared_data:
  services:
--  backend:
-+  rails:
-     build:
+   backend:
+@@ -12,9 +13,9 @@ services:
        context: .
        dockerfile: Dockerfile.development
      volumes:
-       - .:/app
-       # Don't mix node_modules between host and container
--      - /app/client/node_modules
+-      - .:/var/server
+-      - ../client:/var/client
 -      - shared_data:/var/shared
++      - .:/app
++       # Don't mix node_modules between host and container
 +      - node_cache:/app/node_modules
        - gem_cache:/usr/local/bundle/gems
      networks:
        - development
-@@ -24,17 +24,18 @@ services:
+@@ -23,17 +24,18 @@ services:
      stdin_open: true
      tty: true
      init: true
@@ -125,7 +128,7 @@ index 918d98b..4ec538c 100644
        interval: 30s
        timeout: 10s
        retries: 3
-@@ -43,6 +44,26 @@ services:
+@@ -42,6 +44,26 @@ services:
      depends_on:
        - db
        - redis
@@ -134,7 +137,7 @@ index 918d98b..4ec538c 100644
 +      context: .
 +      dockerfile: Dockerfile.development
 +    depends_on:
-+      rails:
++      backend:
 +        condition: service_healthy
 +    entrypoint: ./bin/dev-vite-entrypoint.sh
 +    environment:
@@ -153,10 +156,9 @@ index 918d98b..4ec538c 100644
      image: postgres:12.5-alpine
      volumes:
 diff --git a/docker-compose.yml b/docker-compose.yml
-deleted file mode 100644
-index 07328d4..0000000
+index 07328d4..e69de29 100644
 --- a/docker-compose.yml
-+++ /dev/null
++++ b/docker-compose.yml
 @@ -1,6 +0,0 @@
 -include:
 -  - path:

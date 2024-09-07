@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 APP_HTML_PATCH="$SCRIPT_DIR/app-html.patch"
@@ -22,7 +24,6 @@ rm -rf ./rhino-project-template_rails_mono
 git clone git@github.com:rhino-project/rhino-project-template.git rhino-project-template_rails_mono
 
 cd ./rhino-project-template_rails_mono/server
-git checkout feat/pnpm
 git checkout -b feature/single-repo
 
 cp ../../../rhino-project-template/server/.env .
@@ -36,7 +37,7 @@ done
 # Configuration files
 git mv -f ../client/vite.config.ts .
 git mv -f ../client/package.json .
-git mv -f ../client/pnpm-lock.yaml .
+git mv -f ../client/package-lock.json .
 git mv ../client/tsconfig.json .
 git mv ../client/tsconfig.node.json .
 
@@ -185,6 +186,9 @@ git cam "Github actions patch"
 echo "patching $ROOT_HTML_PATCH"
 patch -p1 < $ROOT_HTML_PATCH
 git cam "Root html patch"
+
+git rm -rf client
+git cam "Remove client"
 
 exit
 

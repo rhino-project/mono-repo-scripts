@@ -1,6 +1,6 @@
-commit 891a05da0b450aa53c8f4c6e4cd4ad386f579b49
+commit a580a0044c38620e11edb2797fd978319b98c32b
 Author: JP Rosevear <jp@codalio.com>
-Date:   Fri Sep 6 11:42:45 2024 -0400
+Date:   Sat Sep 7 17:36:59 2024 -0400
 
     gha workflow
 
@@ -23,7 +23,7 @@ index 418bc76..3cca428 100644
        extends: ['plugin:vitest/recommended', 'plugin:testing-library/react']
      },
 diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
-index 095b72c..cb33912 100644
+index 7924e08..fbfab44 100644
 --- a/.github/workflows/ci.yml
 +++ b/.github/workflows/ci.yml
 @@ -3,22 +3,19 @@ name: CI
@@ -67,27 +67,23 @@ index 095b72c..cb33912 100644
  
      steps:
        - uses: actions/checkout@v4
-@@ -56,7 +54,18 @@ jobs:
+@@ -56,7 +54,14 @@ jobs:
        - uses: ruby/setup-ruby@v1
          with:
            bundler-cache: true
 -          working-directory: server
 +
-+      - uses: pnpm/action-setup@v4
-+        with:
-+          run_install: false
-+
 +      - uses: actions/setup-node@v4
 +        with:
 +          node-version-file: .tool-versions
-+          cache: 'pnpm'
++          cache: 'npm'
 +
 +      - name: Install dependencies
-+        run: pnpm install
++        run: npm install
  
        - name: RuboCop Check
          run: bundle exec rubocop
-@@ -68,19 +77,16 @@ jobs:
+@@ -68,19 +73,16 @@ jobs:
          run: bin/rails db:schema:load --trace
  
        - name: Run app tests
@@ -109,23 +105,7 @@ index 095b72c..cb33912 100644
  
      env:
        NODE_ENV: test
-@@ -91,14 +97,12 @@ jobs:
- 
-       - uses: pnpm/action-setup@v4
-         with:
--          package_json_file: client/package.json
-           run_install: false
- 
-       - uses: actions/setup-node@v4
-         with:
-           node-version-file: .tool-versions
--          cache: "pnpm"
--          cache-dependency-path: client
-+          cache: 'pnpm'
- 
-       - name: Install dependencies
-         run: pnpm install
-@@ -118,8 +122,8 @@ jobs:
+@@ -113,8 +115,8 @@ jobs:
        - name: Save coverage
          uses: actions/upload-artifact@v4
          with:
@@ -136,7 +116,7 @@ index 095b72c..cb33912 100644
  
    cypress:
      runs-on: ubuntu-latest
-@@ -127,7 +131,7 @@ jobs:
+@@ -122,7 +124,7 @@ jobs:
        postgres:
          image: postgres:15
          ports:
@@ -145,7 +125,7 @@ index 095b72c..cb33912 100644
          env:
            POSTGRES_USER: rails_test
            POSTGRES_DB: rails_test
-@@ -151,12 +155,12 @@ jobs:
+@@ -146,12 +148,12 @@ jobs:
        BUNDLE_PATH: vendor/bundle
        RAILS_ENV: test
        ROOT_URL: http://localhost:3000
@@ -161,30 +141,20 @@ index 095b72c..cb33912 100644
        DISABLE_SSL: 1
  
      steps:
-@@ -165,51 +169,34 @@ jobs:
+@@ -160,42 +162,27 @@ jobs:
        - uses: ruby/setup-ruby@v1
          with:
            bundler-cache: true
 -          working-directory: server
  
-       - uses: pnpm/action-setup@v4
-         with:
--          package_json_file: client/package.json
-           run_install: false
- 
        - uses: actions/setup-node@v4
          with:
            node-version-file: .tool-versions
--          cache: "pnpm"
+           cache: "npm"
 -          cache-dependency-path: client
-+          cache: 'pnpm'
  
        - name: Install dependencies
-         run: pnpm install
--        working-directory: client
- 
-       - name: Install Cypress binary
-         run: pnpm exec cypress install
+         run: npm install
 -        working-directory: client
  
        - name: Reset database
@@ -192,7 +162,7 @@ index 095b72c..cb33912 100644
 -        working-directory: server
  
        - name: Build frontend
-         run: pnpm build
+         run: npm run build
 -        working-directory: client
  
        - name: Run server
@@ -200,7 +170,7 @@ index 095b72c..cb33912 100644
 -        working-directory: server
 -
 -      - name: Run client
--        run: pnpm preview --port 3001 &
+-        run: npm run preview -- --port 3001 &
 -        working-directory: client
  
        - name: Wait for server
@@ -212,7 +182,7 @@ index 095b72c..cb33912 100644
 -          curl -I http://localhost:3001 --retry 5 --retry-all-errors --retry-delay 10 --max-time 60 --connect-timeout 10
 -
        - name: Run Cypress tests
-         run: pnpm exec cypress run
+         run: npx cypress run --record || npx cypress run
 -        working-directory: client
 diff --git a/cypress.config.ts b/cypress.config.ts
 index 556357d..b2c6bf2 100644
@@ -231,7 +201,7 @@ index 556357d..b2c6bf2 100644
      }
    }
 diff --git a/package.json b/package.json
-index 1ba52ee..af86adb 100644
+index 1e7612f..1d22981 100644
 --- a/package.json
 +++ b/package.json
 @@ -71,8 +71,8 @@
