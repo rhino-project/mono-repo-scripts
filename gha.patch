@@ -1,8 +1,8 @@
-commit a580a0044c38620e11edb2797fd978319b98c32b
+commit 30a66daa5cab4aa31eb49e0b3a37a64a27df685c
 Author: JP Rosevear <jp@codalio.com>
-Date:   Sat Sep 7 17:36:59 2024 -0400
+Date:   Sat Sep 7 17:54:53 2024 -0400
 
-    gha workflow
+    Github actions patch
 
 diff --git a/.eslintrc.cjs b/.eslintrc.cjs
 index 418bc76..3cca428 100644
@@ -23,7 +23,7 @@ index 418bc76..3cca428 100644
        extends: ['plugin:vitest/recommended', 'plugin:testing-library/react']
      },
 diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
-index 7924e08..fbfab44 100644
+index 7924e08..08100fa 100644
 --- a/.github/workflows/ci.yml
 +++ b/.github/workflows/ci.yml
 @@ -3,22 +3,19 @@ name: CI
@@ -105,7 +105,15 @@ index 7924e08..fbfab44 100644
  
      env:
        NODE_ENV: test
-@@ -113,8 +115,8 @@ jobs:
+@@ -93,7 +95,6 @@ jobs:
+         with:
+           node-version-file: .tool-versions
+           cache: "npm"
+-          cache-dependency-path: client
+ 
+       - name: Install dependencies
+         run: npm install
+@@ -113,8 +114,8 @@ jobs:
        - name: Save coverage
          uses: actions/upload-artifact@v4
          with:
@@ -116,7 +124,7 @@ index 7924e08..fbfab44 100644
  
    cypress:
      runs-on: ubuntu-latest
-@@ -122,7 +124,7 @@ jobs:
+@@ -122,7 +123,7 @@ jobs:
        postgres:
          image: postgres:15
          ports:
@@ -125,7 +133,7 @@ index 7924e08..fbfab44 100644
          env:
            POSTGRES_USER: rails_test
            POSTGRES_DB: rails_test
-@@ -146,12 +148,12 @@ jobs:
+@@ -146,12 +147,12 @@ jobs:
        BUNDLE_PATH: vendor/bundle
        RAILS_ENV: test
        ROOT_URL: http://localhost:3000
@@ -141,7 +149,7 @@ index 7924e08..fbfab44 100644
        DISABLE_SSL: 1
  
      steps:
-@@ -160,42 +162,27 @@ jobs:
+@@ -160,42 +161,27 @@ jobs:
        - uses: ruby/setup-ruby@v1
          with:
            bundler-cache: true
