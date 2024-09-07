@@ -193,10 +193,8 @@ patch -p1 < $DEVCONTAINER_PATCH
 git cam "Devcontainer patch"
 
 ## TODO
-# Unified docker prod environment for deployment (testing)
 # Devcontainer
 # README fixes
-# Index.html support (Segment, Stripe)
 
 ## DONE
 # Location of source files
@@ -209,4 +207,6 @@ git cam "Devcontainer patch"
 # Docker compose updates
 # Github actions
 # Procfile updates?
+# Index.html support (Segment, Stripe)
+
 
