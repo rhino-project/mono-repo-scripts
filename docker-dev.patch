@@ -1,11 +1,11 @@
-commit 7583d334f277e3aa7f9ff15163be537e3f965b43
+commit f6f3c01878c8f0499e172a413fb51c3abfd75329
 Author: JP Rosevear <jp@codalio.com>
-Date:   Sat Sep 7 16:43:22 2024 -0400
+Date:   Sat Sep 7 18:06:29 2024 -0400
 
     Docker dev patch
 
 diff --git a/Dockerfile.development b/Dockerfile.development
-index 8db557b..27d708e 100644
+index 8db557b..a0de4f0 100644
 --- a/Dockerfile.development
 +++ b/Dockerfile.development
 @@ -1,14 +1,10 @@
@@ -57,7 +57,7 @@ index a6aae2e..5814b85 100755
 \ No newline at end of file
 +bundle exec ${@}
 diff --git a/bin/dev-vite-entrypoint.sh b/bin/dev-vite-entrypoint.sh
-new file mode 100644
+new file mode 100755
 index 0000000..2b4abab
 --- /dev/null
 +++ b/bin/dev-vite-entrypoint.sh
@@ -70,9 +70,10 @@ index 0000000..2b4abab
 +
 +bin/vite dev
 diff --git a/client-override.yml b/client-override.yml
-index 2f98292..e69de29 100644
+deleted file mode 100644
+index 2f98292..0000000
 --- a/client-override.yml
-+++ b/client-override.yml
++++ /dev/null
 @@ -1,5 +0,0 @@
 -services:
 -  frontend:
@@ -80,7 +81,7 @@ index 2f98292..e69de29 100644
 -      backend:
 -        condition: service_healthy
 diff --git a/docker-compose.yaml b/docker-compose.yaml
-index 6b0a770..4f5a7d8 100644
+index 6b0a770..e499199 100644
 --- a/docker-compose.yaml
 +++ b/docker-compose.yaml
 @@ -5,6 +5,7 @@ volumes:
@@ -99,7 +100,7 @@ index 6b0a770..4f5a7d8 100644
 -      - ../client:/var/client
 -      - shared_data:/var/shared
 +      - .:/app
-+       # Don't mix node_modules between host and container
++      # Don't mix node_modules between host and container
 +      - node_cache:/app/node_modules
        - gem_cache:/usr/local/bundle/gems
      networks:
@@ -126,7 +127,7 @@ index 6b0a770..4f5a7d8 100644
        interval: 30s
        timeout: 10s
        retries: 3
-@@ -42,6 +44,26 @@ services:
+@@ -42,6 +44,28 @@ services:
      depends_on:
        - db
        - redis
@@ -143,6 +144,8 @@ index 6b0a770..4f5a7d8 100644
 +      RAILS_ENV: development
 +      VITE_RUBY_HOST: 0.0.0.0
 +    init: true
++    networks:
++      - development
 +    ports:
 +      - '3036:3036'
 +    volumes:
@@ -154,9 +157,10 @@ index 6b0a770..4f5a7d8 100644
      image: postgres:12.5-alpine
      volumes:
 diff --git a/docker-compose.yml b/docker-compose.yml
-index 07328d4..e69de29 100644
+deleted file mode 100644
+index 07328d4..0000000
 --- a/docker-compose.yml
-+++ b/docker-compose.yml
++++ /dev/null
 @@ -1,6 +0,0 @@
 -include:
 -  - path:
