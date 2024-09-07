@@ -8,17 +8,15 @@ diff --git a/Dockerfile b/Dockerfile
 index bdd99ab..f63e26c 100644
 --- a/Dockerfile
 +++ b/Dockerfile
-@@ -24,12 +24,25 @@ FROM base AS build
+@@ -24,12 +24,23 @@ FROM base AS build
  # Install packages needed to build gems
  RUN apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config
  
 +# Install JavaScript dependencies
 +ARG NODE_VERSION=20.14.0
-+ARG PNPM_VERSION=9.9.0
 +ENV PATH=/usr/local/node/bin:$PATH
 +RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
 +    /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
-+    npm install -g pnpm@$PNPM_VERSION && \
 +    rm -rf /tmp/node-build-master
 +
  # Install application gems
@@ -28,8 +26,8 @@ index bdd99ab..f63e26c 100644
      bundle exec bootsnap precompile --gemfile
  
 +# Install node modules
-+COPY package.json pnpm-lock.yaml ./
-+RUN pnpm install --frozen-lockfile
++COPY package.json package-lock.json ./
++RUN npm install --frozen-lockfile
 +
  # Copy application code
  COPY . .
