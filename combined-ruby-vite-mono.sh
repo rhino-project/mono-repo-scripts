@@ -2,6 +2,10 @@
 
 set -e
 
+GIT_REPO=${1:-rhino-project-template}
+GIT_REPO_ORG=${2:-rhino-project}
+MONO_REPO_NAME="${GIT_REPO}_rails_mono"
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 APP_HTML_PATCH="$SCRIPT_DIR/app-html.patch"
@@ -22,12 +26,12 @@ DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 
 rm -rf ./rhino-project-template_rails_mono
 
-git clone git@github.com:rhino-project/rhino-project-template.git rhino-project-template_rails_mono
+git clone git@github.com:${GIT_REPO_ORG}/${GIT_REPO}.git ${MONO_REPO_NAME}
 
-cd ./rhino-project-template_rails_mono
+cd ${MONO_REPO_NAME}
 git checkout -b feature/single-repo
 
-cp ../../rhino-project-template/server/.env .
+#cp ../../rhino-project-template/server/.env .
 
 
 CLIENT_DOT_FILES=".npmrc .nvmrc .eslintrc.cjs .prettierrc.json .prettierignore .istanbul.yml"
@@ -85,12 +89,12 @@ git mv app/frontend/index.jsx app/frontend/entrypoints/application.jsx
 git commit -m "Client files"
 
 # Extract the value of ROOT_URL
-ROOT_URL_VALUE=$(grep "ROOT_URL=" .env | cut -d '=' -f2)
-# Replace the value of FRONT_END_URL with the value of ROOT_URL
-sed -i '' "s|FRONT_END_URL=.*|FRONT_END_URL=$ROOT_URL_VALUE|" .env
-grep -q "^VITE_API_ROOT_PATH=" .env && \
-  sed -i '' "s|^VITE_API_ROOT_PATH=.*|VITE_API_ROOT_PATH=$ROOT_URL_VALUE|" .env || \
-  echo "VITE_API_ROOT_PATH=$ROOT_URL_VALUE" >> .env
+# ROOT_URL_VALUE=$(grep "ROOT_URL=" .env | cut -d '=' -f2)
+# # Replace the value of FRONT_END_URL with the value of ROOT_URL
+# sed -i '' "s|FRONT_END_URL=.*|FRONT_END_URL=$ROOT_URL_VALUE|" .env
+# grep -q "^VITE_API_ROOT_PATH=" .env && \
+#   sed -i '' "s|^VITE_API_ROOT_PATH=.*|VITE_API_ROOT_PATH=$ROOT_URL_VALUE|" .env || \
+#   echo "VITE_API_ROOT_PATH=$ROOT_URL_VALUE" >> .env
 
 # Create the directory if it doesn't exist
 mkdir -p app/views/frontend
