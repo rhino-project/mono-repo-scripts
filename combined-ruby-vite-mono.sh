@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 GIT_REPO=${1:-rhino-project-template}
 GIT_REPO_ORG=${2:-rhino-project}
 MONO_REPO_NAME="${GIT_REPO}_rails_mono"
@@ -24,7 +22,7 @@ GHA_NIGHTLY_PATCH="$SCRIPT_DIR/gha-nightly.patch"
 DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 
 
-rm -rf ./rhino-project-template_rails_mono
+rm -rf ${MONO_REPO_NAME}
 
 git clone git@github.com:${GIT_REPO_ORG}/${GIT_REPO}.git ${MONO_REPO_NAME}
 
@@ -190,6 +188,9 @@ git cam "GHA nightly patch"
 
 git rm -rf client
 git cam "Remove client"
+
+git rm -rf mono.code-workspace
+git cam "Remove mono.code-workspace"
 
 exit
 
