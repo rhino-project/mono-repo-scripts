@@ -15,6 +15,7 @@ DOCKER_DEV_PATCH="$SCRIPT_DIR/docker-dev.patch"
 DOCKER_PATCH="$SCRIPT_DIR/docker.patch"
 GHA_PATCH="$SCRIPT_DIR/gha.patch"
 ROOT_HTML_PATCH="$SCRIPT_DIR/root_html.patch"
+GHA_NIGHTLY_PATCH="$SCRIPT_DIR/gha-nightly.patch"
 
 DEVCONTAINER_PATCH="$SCRIPT_DIR/devcontainer.patch"
 
@@ -23,39 +24,61 @@ rm -rf ./rhino-project-template_rails_mono
 
 git clone git@github.com:rhino-project/rhino-project-template.git rhino-project-template_rails_mono
 
-cd ./rhino-project-template_rails_mono/server
+cd ./rhino-project-template_rails_mono
 git checkout -b feature/single-repo
 
-cp ../../../rhino-project-template/server/.env .
+cp ../../rhino-project-template/server/.env .
 
 
 CLIENT_DOT_FILES=".npmrc .nvmrc .eslintrc.cjs .prettierrc.json .prettierignore .istanbul.yml"
 for file in $CLIENT_DOT_FILES; do
- git mv ../client/$file .
+ git mv client/$file .
 done
 
 # Configuration files
-git mv -f ../client/vite.config.ts .
-git mv -f ../client/package.json .
-git mv -f ../client/package-lock.json .
-git mv ../client/tsconfig.json .
-git mv ../client/tsconfig.node.json .
+git mv -f client/vite.config.ts .
+git mv -f client/package.json .
+git mv -f client/package-lock.json .
+git mv client/tsconfig.json .
+git mv client/tsconfig.node.json .
 
 # Cypress
-git mv ../client/tsconfig.cypress.json .
-git mv ../client/cypress.config.ts .
-git mv ../client/cypress .
+git mv client/tsconfig.cypress.json .
+git mv client/cypress.config.ts .
+git mv client/cypress .
 
 git commit -m "Move configuration files"
 
+
+git mv -f server/* .
+git mv server/.rubocop.yml .
+git mv server/.ruby-version .
+git mv server/.simplecov .
+git mv -f server/.gitignore .
+git mv -f server/.dockerignore .
+echo "" >> .dockerignore && cat client/.dockerignore >> .dockerignore
+
+# Already covered at the top
+git rm -rf server/.vscode
+git rm server/.tool-versions
+
+rm -rf server
+
+git cam "Move server files to top level"
+
 bundle add vite_rails
 bundle exec vite install
+
+# From installation of ruby vite
+rm -rf node_modules
+rm -rf .bundle
+
 git add .
 git commit -m "Install vite_rails"
 
 # Core code
 rm -rf app/frontend
-git mv ../client/src app/frontend
+git mv client/src app/frontend
 mkdir -p app/frontend/entrypoints
 git mv app/frontend/index.jsx app/frontend/entrypoints/application.jsx
 
@@ -137,36 +160,6 @@ echo "patching $FRONTEND_TESTS_PATCH"
 patch -p1 < $FRONTEND_TESTS_PATCH
 git cam "Frontend tests patch"
 
-# From installation of ruby vite
-rm -rf node_modules
-rm -rf .bundle
-
-git mv -f * ..
-git mv .rubocop.yml ..
-git mv .ruby-version ..
-git mv .simplecov ..
-git mv -f .gitignore ..
-git mv -f .dockerignore ..
-echo "" >> ../.dockerignore && cat ../client/.dockerignore >> ../.dockerignore
-
-# Already covered at the top
-git rm -rf .vscode
-git rm .tool-versions
-
-mv .env ..
-
-# Yes, we are moving them twice, but we don't want to rewrite this script
-CLIENT_DOT_FILES=".npmrc .nvmrc .eslintrc.cjs .prettierrc.json .prettierignore .istanbul.yml"
-for file in $CLIENT_DOT_FILES; do
- git mv $file ..
-done
-
-cd ..
-rm -rf server
-
-git cam "Move server files to top level"
-
-
 echo "patching $DOCKER_DEV_PATCH"
 patch -p1 < $DOCKER_DEV_PATCH
 git rm -f docker-compose.yml
@@ -186,6 +179,10 @@ git cam "Github actions patch"
 echo "patching $ROOT_HTML_PATCH"
 patch -p1 < $ROOT_HTML_PATCH
 git cam "Root html patch"
+
+echo "patching $GHA_NIGHTLY_PATCH"
+patch -p1 < $GHA_NIGHTLY_PATCH
+git cam "GHA nightly patch"
 
 git rm -rf client
 git cam "Remove client"
