@@ -66,7 +66,7 @@ git rm server/.tool-versions
 
 rm -rf server
 
-git cam "Move server files to top level"
+git commit -am "Move server files to top level"
 
 bundle add vite_rails
 bundle exec vite install
@@ -119,7 +119,7 @@ echo "Content written to app/controllers/frontend_controller.rb"
 
 git add app/controllers/frontend_controller.rb
 git add app/views/frontend/root.html.erb
-git cam "Add frontend_controller and root view"
+git commit -am "Add frontend_controller and root view"
 
 # Use sed to make the changes
 sed -i '' '/root to: redirect(ENV\["FRONT_END_URL"\] || "\/"), via: :all/d' config/routes.rb
@@ -130,37 +130,37 @@ sed -i '' '/ActiveAdmin.routes(self)/a\
   end\
   root to: "frontend#root", via: :get' config/routes.rb
 
-git cam "Add frontend#root route"
+git commit -am "Add frontend#root route"
 
 echo "patching $APP_HTML_PATCH"
 patch -p2 < $APP_HTML_PATCH
-git cam "Update application.html.erb"
+git commit -am "Update application.html.erb"
 
 echo "patching $VITE_RUBY_PLUGIN_PATCH"
 patch -p2 < $VITE_RUBY_PLUGIN_PATCH
-git cam "Add vite ruby plugin"
+git commit -am "Add vite ruby plugin"
 
 echo "patching $ENTRY_POINT_PATCH"
 patch -p2 < $ENTRY_POINT_PATCH
-git cam "Update entrypoint"
+git commit -am "Update entrypoint"
 
 echo "patching $TSCONFIG_PATH_PATCH"
 patch -p2 < $TSCONFIG_PATH_PATCH
-git cam "Update tsconfig paths"
+git commit -am "Update tsconfig paths"
 
 echo app/frontend/models/static.js > .prettierignore
-git cam "Ignore static.js in prettier"
+git commit -am "Ignore static.js in prettier"
 
 echo "patching $CYPRESS_STATIC_PATCH"
 patch -p2 < $CYPRESS_STATIC_PATCH
-git cam "Update cypress static load"
+git commit -am "Update cypress static load"
 
 echo "patching $TESTS_PATCH"
 patch -p2 < $TESTS_PATCH
 
 echo "patching $FRONTEND_TESTS_PATCH"
 patch -p1 < $FRONTEND_TESTS_PATCH
-git cam "Frontend tests patch"
+git commit -am "Frontend tests patch"
 
 echo "patching $DOCKER_DEV_PATCH"
 patch -p1 < $DOCKER_DEV_PATCH
@@ -168,35 +168,35 @@ git rm -f docker-compose.yml
 git rm -f client-override.yml
 git add ./bin/dev-vite-entrypoint.sh
 chmod +x ./bin/dev-vite-entrypoint.sh
-git cam "Docker dev patch"
+git commit -am "Docker dev patch"
 
 echo "patching $DOCKER_PATCH"
 patch -p1 < $DOCKER_PATCH
-git cam "Docker patch"
+git commit -am "Docker patch"
 
 echo "patching $GHA_PATCH"
 patch -p1 < $GHA_PATCH
-git cam "Github actions patch"
+git commit -am "Github actions patch"
 
 echo "patching $ROOT_HTML_PATCH"
 patch -p1 < $ROOT_HTML_PATCH
-git cam "Root html patch"
+git commit -am "Root html patch"
 
 echo "patching $GHA_NIGHTLY_PATCH"
 patch -p1 < $GHA_NIGHTLY_PATCH
-git cam "GHA nightly patch"
+git commit -am "GHA nightly patch"
 
 git rm -rf client
-git cam "Remove client"
+git  commit -am "Remove client"
 
 git rm -rf mono.code-workspace
-git cam "Remove mono.code-workspace"
+git  commit -am "Remove mono.code-workspace"
 
 exit
 
 echo "patching $DEVCONTAINER_PATCH"
 patch -p1 < $DEVCONTAINER_PATCH
-git cam "Devcontainer patch"
+git commit -am "Devcontainer patch"
 
 ## TODO
 # Devcontainer
